@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-const host = 'http://localhost:3000/'
+// const host = 'http://localhost:3000/'
 const token = localStorage.getItem('token')
 const userId = localStorage.getItem('userId')
 
@@ -18,7 +18,7 @@ const LeaderBoard = () => {
   ];
 
   const fetchLeaderBoard = async () => {
-    const response = await fetch(`${host}user/${userId}/leaderboard`, {
+    const response = await fetch(`/user/${userId}/leaderboard`, {
       method: 'GET',
       headers: {
           'authorization': token

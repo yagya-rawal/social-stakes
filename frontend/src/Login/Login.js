@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 const Login = (props) => {
 
-  const host = 'http://localhost:3000/'
+//  const host = 'http://localhost:3000/'
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
   const [error,setError] = useState('')
@@ -17,10 +17,9 @@ const Login = (props) => {
         return
     }
 
-    console.log(host + 'login')
     const data = { userName, password}
 
-    const response = await fetch(`${host}login`, {
+    const response = await fetch(`/login`, {
         method: 'POST',
         body: JSON.stringify(data) ,
         headers: {

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useEffect } from 'react'
 
-const host = 'http://localhost:3000/'
+//const host = 'http://localhost:3000/'
 const token = localStorage.getItem('token')
 const userId = localStorage.getItem('userId')
 
@@ -65,7 +65,7 @@ const EventList = () => {
     // }
 
     const getBetsOfMatch = async (matchId) => {
-        const response = await fetch(`${host}user/${userId}/event/${matchId}/bets`, {
+        const response = await fetch(`/user/${userId}/event/${matchId}/bets`, {
             method: 'GET',
             headers: {
                 'authorization': token
@@ -91,7 +91,7 @@ const EventList = () => {
             // Create an array of promises for each fetch operation
             const fetchPromises = matches.map(async match => {
                 console.log("\n eventId:: " + match._id);
-                const response = await fetch(`${host}user/${userId}/event/${match._id}/bets`, {
+                const response = await fetch(`/user/${userId}/event/${match._id}/bets`, {
                     method: 'GET',
                     headers: {
                         'authorization': token
@@ -139,7 +139,7 @@ const EventList = () => {
                 for (const option of match.options) {
                     if (!tempOptions[option]) {
                         console.log("api called " + option);
-                        const response = await fetch(`${host}user/${userId}/option/${option}`, {
+                        const response = await fetch(`/user/${userId}/option/${option}`, {
                             method: 'GET',
                             headers: {
                                 'authorization': token
@@ -180,7 +180,7 @@ const EventList = () => {
     useEffect(() => {
         const fetchSelectedOptions = async () => {
 
-            const response = await fetch(`${host}user/${userId}/bets`, {
+            const response = await fetch(`/user/${userId}/bets`, {
                 method: 'GET',
                 headers: {
                     'authorization': token
@@ -213,7 +213,7 @@ const EventList = () => {
     useEffect(() => {
 
         const fetchMatches = async () => {
-            const response = await fetch(`${host}user/${userId}/events/new`, {
+            const response = await fetch(`/user/${userId}/events/new`, {
                 method: 'GET',
                 headers: {
                     'authorization': token
@@ -241,7 +241,7 @@ const EventList = () => {
         console.log(option)
 
         const data = { option }
-        const response = await fetch(`${host}user/${userId}/events/${matchId}`, {
+        const response = await fetch(`/user/${userId}/events/${matchId}`, {
             method: 'PUT',
             body: JSON.stringify(data),
             headers: {
