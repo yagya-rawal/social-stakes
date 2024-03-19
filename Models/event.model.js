@@ -15,8 +15,15 @@ const eventSchema = new mongoose.Schema({
         require: true
     },
     winner: {
-        type: String,
-        require: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'option',
+        require: false,             
+        default: null
+    },
+    isFinished: {
+        type: Boolean,
+        require: false,
+        default: false
     }
 })
 
