@@ -1,4 +1,3 @@
-const { Double } = require('bson')
 const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
@@ -12,6 +11,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true
     },
+    password: {
+        type: String,
+        require: true
+    },
     email: {
         type: String,
         require: true
@@ -22,9 +25,13 @@ const userSchema = new mongoose.Schema({
         default: 0
     },
     currentScore: {
-        type: Double,
+        type: Number,
         require: false,
-        default: 0
+        default: 0.0
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 })
 

@@ -6,7 +6,7 @@ const eventbetSchema = new mongoose.Schema({
         ref: 'event',
         require: true
     },
-    userId: {
+    userId: {   
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         require: true
@@ -18,7 +18,12 @@ const eventbetSchema = new mongoose.Schema({
     },
     win: {
         type: Boolean,
-        require: false
+        require: false,
+        default: null
+    },
+    points: {
+        type: Number,
+        default: 0.0
     }
 })
 
