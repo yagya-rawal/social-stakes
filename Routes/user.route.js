@@ -76,6 +76,42 @@ router.post('/login', async (req, res) => {
 
 })
 
+router.post('/change-password', async (req, res) => {
+    const { userName, oldPassword, newPassword } = req.body;
+  
+    try {
+      // Find user by email
+      const user = await User.findOne({ userName });
+  
+      // If user doesn't exist
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Verify old password
+      const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!passwordMatch) {
+        console.log(passwordMatch, user.password,oldPassword)
+        return res.status(401).json({ error: 'Invalid old password' });
+      }
+  
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+  
+      console.log(hashedPassword)
+
+      // Update user's password
+      user.password = hashedPassword;
+      await user.save();
+  
+      res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
+
 
 router.get('/user/:userId/events/new', verifyUser, async (req, res) => {
 

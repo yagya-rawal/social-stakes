@@ -10,6 +10,12 @@ const Login = (props) => {
 
   const navigate = useNavigate()
 
+  const token = localStorage.getItem('token')
+
+  if(token){
+    navigate('/')
+  }
+
   const onButtonClick = async () => {
     
     if(userName === '' || password === ''){
@@ -41,11 +47,19 @@ const Login = (props) => {
         setUserName('')
         setPassword('')
 
+        console.log(json)
+
+        if(json.token){
         localStorage.setItem('userId', json.userId)
         localStorage.setItem('token',json.token)
 
+        setTimeout(1000)  
 
         navigate('/')
+        }
+        else{
+          setError("couldn't login, recheck your userName and password")
+        }
 
     }
   }
@@ -69,6 +83,7 @@ const Login = (props) => {
       <div className={'inputContainer'}>
         <input
           value={password}
+          type='password'
           placeholder="Enter your password here"
           onChange={(ev) => setPassword(ev.target.value)}
           className={'inputBox'}

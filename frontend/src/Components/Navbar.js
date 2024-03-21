@@ -14,19 +14,26 @@ const Header = () => {
 
   const logout = (props) => {
     localStorage.removeItem('userName')
-    localStorage.removeItem('user')
+    localStorage.removeItem('userId')
+    localStorage.removeItem('token')
     console.log('successfully logged out')
     
     navigate('/login')
   }
-  return ( 
+
+  const changePassword = (props) => {
+    navigate('/change-password')
+  }
+
+  return (
  
       <Navbar className="bg-body-tertiary mb-4 mt-2">
       <Container>
         <Navbar.Brand href="#home"><h2>{userName}</h2></Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end">
-          <Button variant="primary" onClick={logout}>Logout</Button> 
+          <Button className="m-1"  variant="primary" onClick={changePassword}>Change Password</Button>
+          <Button variant="danger" onClick={logout}>Logout</Button> 
         </Navbar.Collapse>
       </Container>
         </Navbar>

@@ -30,58 +30,6 @@ const EventList = () => {
         }
     }
 
-    // const fetchBetsMatchwise = async () => {
-
-    //     matches.map(async match => {
-            
-    //         console.log("\n eventId:: " + match._id)
-    //         const response = await fetch(`${host}user/${userId}/event/${match._id}/bets`, {
-    //             method: 'GET',
-    //             headers: {
-    //                 'authorization': token
-    //             }
-    //         })
-
-    //         if(!response.ok)
-    //             return 
-
-    //         // console.log(response.json())
-
-    //         const json = await response.json()
-
-
-    //         const tempBetsMatchwise = {...betsMatchwise}
-
-    //         console.log("beffff")
-    //         console.log(tempBetsMatchwise)
-
-    //         tempBetsMatchwise[match] = json
-
-    //         setBetsMatchwise(tempBetsMatchwise)
-
-    //         console.log(tempBetsMatchwise)
-
-    //     })
-    // }
-
-    const getBetsOfMatch = async (matchId) => {
-        const response = await fetch(`/user/${userId}/event/${matchId}/bets`, {
-            method: 'GET',
-            headers: {
-                'authorization': token
-            }
-        });
-
-        if(!response.ok){
-            console.error('Failed to fetch bets for match:', matchId)
-            return
-        }
-
-        const json = await response.json()
-
-        
-        
-    }
 
 
 
@@ -293,6 +241,8 @@ const EventList = () => {
     return (
         <>
             <ListGroup >
+
+                {console.log(token)}
 
                 {matches.map((team) => (
                     <ListGroup.Item >
