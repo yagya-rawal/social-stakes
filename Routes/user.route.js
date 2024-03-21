@@ -49,9 +49,12 @@ router.post('/login', async (req, res) => {
         })
         if (!user) return res.status(500).json("User doesn't exist")
 
+
         else {
-            // console.log(user)
-            const hashedPassword = bcrypt.compare(req.body.password, user.password)
+            console.log(user)
+
+            console.log("asgbojndf    dfsdgsno " + req.body.userName)
+            const hashedPassword = await bcrypt.compare(req.body.password, user.password)
 
             if (!hashedPassword) {
                 return res.status(401).send('Invalid password')
@@ -78,49 +81,65 @@ router.post('/login', async (req, res) => {
 
 router.post('/change-password', async (req, res) => {
     const { userName, oldPassword, newPassword } = req.body;
-  
+
     try {
-      // Find user by email
-      const user = await User.findOne({ userName });
-  
-      // If user doesn't exist
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
+        // Find user by email
+        const user = await User.findOne({ userName });
 
-      // Verify old password
-      const passwordMatch = await bcrypt.compare(oldPassword, user.password);
-      if (!passwordMatch) {
-        console.log(passwordMatch, user.password,oldPassword)
-        return res.status(401).json({ error: 'Invalid old password' });
-      }
-  
-      // Hash new password
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-  
-      console.log(hashedPassword)
+        // If user doesn't exist
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
-      // Update user's password
-      user.password = hashedPassword;
-      await user.save();
-  
-      res.status(200).json({ message: 'Password updated successfully' });
+        // Verify old password
+        const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!passwordMatch) {
+            console.log(passwordMatch, user.password, oldPassword)
+            return res.status(401).json({ error: 'Invalid old password' });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        console.log(hashedPassword)
+
+        // Update user's password
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({ message: 'Password updated successfully' });
     } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-  });
-  
+});
+
 
 
 router.get('/user/:userId/events/new', verifyUser, async (req, res) => {
 
-    // console.log("get api called ")
+    // Get the current date
+    const currentDate = new Date();
+
+    // Get yesterday's date by subtracting 1 day from the current date
+    const yesterday = new Date(currentDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    // Perform the query using yesterday's date
     const newEvents = await Event.find({
         cutoff: {
-            $gte: new Date()
+            $gte: yesterday
         }
-    }).sort({ cutoff: +1 })
+    }).sort({ cutoff: 1 });
+
+
+
+    // console.log("get api called ")
+    // const newEvents = await Event.find({
+    //     cutoff: {
+    //         $gte: new Date()
+    //     }
+    // }).sort({ cutoff: +1 })
 
     if (!newEvents)
         res.status(500).send("An error occurred at server")
@@ -163,7 +182,7 @@ router.put('/user/:userId/events/:eventId', verifyUser, async (req, res) => {
     }
 
     if (req.body.option == -1) {
-        const eventbet = await EventBet.findOneAndDelete({ 'userId': req.params.userId , 'eventId': req.params.eventId })
+        const eventbet = await EventBet.findOneAndDelete({ 'userId': req.params.userId, 'eventId': req.params.eventId })
 
         // console.log("option is -1")
         if (!eventbet)
@@ -241,7 +260,7 @@ router.get('/user/:userId/leaderboard', verifyUser, async (req, res) => {
 router.get('/user/:userId/option/:optionId', verifyUser, async (req, res) => {
 
 
-  //  console.log("optionid " + req.params.optionId)
+    //  console.log("optionid " + req.params.optionId)
 
     const option = await Option.findOne({ _id: req.params.optionId })
 
@@ -251,7 +270,7 @@ router.get('/user/:userId/option/:optionId', verifyUser, async (req, res) => {
 
     else {
 
-   //     console.log(option)
+        //     console.log(option)
         res.status(200).json(option)
 
     }
@@ -265,59 +284,59 @@ router.get('/user/:userId/bets', verifyUser, async (req, res) => {
         return res.status(500).json("An error occurred at server")
     }
 
-        res.status(200).json(eventbets)
-    
+    res.status(200).json(eventbets)
+
 })
 
-router.get('/user/:userId/event/:eventId/bets', verifyUser , async (req,res) => {
-try{
+router.get('/user/:userId/event/:eventId/bets', verifyUser, async (req, res) => {
+    try {
 
-    console.log("\n\n"+ req.params.eventId)
+        console.log("\n\n" + req.params.eventId)
 
-    const eventbets = await EventBet.find({'eventId' : req.params.eventId})
+        const eventbets = await EventBet.find({ 'eventId': req.params.eventId })
 
-    if(!eventbets)
-        return res.status(500).json("some error occurred")
+        if (!eventbets)
+            return res.status(500).json("some error occurred")
 
-   // console.log("\n\n\n eventbets ::"+ (eventbets))
-    const event = await Event.findOne({'_id': req.params.eventId})
-     console.log("\n\n\n event ::"+ event)
+        // console.log("\n\n\n eventbets ::"+ (eventbets))
+        const event = await Event.findOne({ '_id': req.params.eventId })
+        console.log("\n\n\n event ::" + event)
 
-    if(!event)
-        return res.status(500).json("some error occurred")
+        if (!event)
+            return res.status(500).json("some error occurred")
 
-    console.log(event)
+        console.log(event)
 
-    var opt1=0,opt2=0
-    const option1=event.options[0], option2=event.options[1]
+        var opt1 = 0, opt2 = 0
+        const option1 = event.options[0], option2 = event.options[1]
 
-    eventbets.map(
-        eventbet => {
-            console.log(option1)
-            console.log(option2)
-            console.log(eventbet.optionId)
-            if(eventbet.optionId._id.toString() === option1._id.toString())
-                opt1++
+        eventbets.map(
+            eventbet => {
+                console.log(option1)
+                console.log(option2)
+                console.log(eventbet.optionId)
+                if (eventbet.optionId._id.toString() === option1._id.toString())
+                    opt1++
 
-            if(eventbet.optionId._id.toString() === option2._id.toString())
-                opt2++
-            
+                if (eventbet.optionId._id.toString() === option2._id.toString())
+                    opt2++
+
+            }
+        )
+
+        console.log("option 1 ::" + opt1 + " option2 ::" + opt2)
+
+        const data = {
+            option1: opt1,
+            option2: opt2
         }
-    )
 
-    console.log("option 1 ::" + opt1 + " option2 ::" + opt2)
+        res.status(200).json(data)
 
-    const data = {
-        option1 : opt1,
-        option2 : opt2
+    } catch (err) {
+        console.log(err)
+        res.status(500).json(err)
     }
-
-    res.status(200).json(data)
-
-} catch(err) {
-    console.log(err)
-    res.status(500).json(err)
-}
 })
 
 module.exports = router

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useEffect } from 'react'
 
-//const host = 'http://localhost:3000/'
+const host = 'http://localhost:3000/'
 const token = localStorage.getItem('token')
 const userId = localStorage.getItem('userId')
 
@@ -38,7 +38,7 @@ const EventList = () => {
         try {
             // Create an array of promises for each fetch operation
             const fetchPromises = matches.map(async match => {
-                console.log("\n eventId:: " + match._id);
+                // console.log("\n eventId:: " + match._id);
                 const response = await fetch(`/user/${userId}/event/${match._id}/bets`, {
                     method: 'GET',
                     headers: {
@@ -68,7 +68,7 @@ const EventList = () => {
                 successfulResults.forEach(result => {
                     newState[result.matchId] = result.data;
                 });
-                console.log(newState)
+                // console.log(newState)
                 return newState;
             });
         } catch (error) {
@@ -86,7 +86,7 @@ const EventList = () => {
             for (const match of matches) {
                 for (const option of match.options) {
                     if (!tempOptions[option]) {
-                        console.log("api called " + option);
+                        // console.log("api called " + option);
                         const response = await fetch(`/user/${userId}/option/${option}`, {
                             method: 'GET',
                             headers: {
@@ -139,15 +139,17 @@ const EventList = () => {
 
                 try {
                     const data = await response.json();
-                    const promises = data.map(match => {
-                        return new Promise(async (resolve, reject) => {
-                            const tempSelectedOptions = { ...selectedOptions };
-                            tempSelectedOptions[match.eventId] = match.optionId;
-                            await setSelectedOptions(tempSelectedOptions);
-                            resolve();
-                        });
-                    });
-                    await Promise.all(promises);
+                    
+                    
+                    const tmp = {...selectedOptions}
+
+                    data.map(match => {
+                        tmp[match.eventId]=match.optionId
+                        console.log(tmp)
+                    })
+                    
+                    setSelectedOptions(tmp)
+
                 } catch (error) {
                     console.error('Error processing response:', error);
                 }
@@ -158,6 +160,10 @@ const EventList = () => {
         fetchSelectedOptions()
 
     }, [matches])
+
+    useEffect(() => {
+        console.log(selectedOptions);
+    }, [selectedOptions]);
     useEffect(() => {
 
         const fetchMatches = async () => {
@@ -173,7 +179,8 @@ const EventList = () => {
 
             else {
 
-                console.log("fetch api : " + json)
+             
+                // console.log("fetch api : " + json)
                 setMatches(json)
 
             }
@@ -186,7 +193,7 @@ const EventList = () => {
 
     const setBet = async (matchId, option, otherOption) => {
 
-        console.log(option)
+        // console.log(option)
 
         const data = { option }
         const response = await fetch(`/user/${userId}/events/${matchId}`, {

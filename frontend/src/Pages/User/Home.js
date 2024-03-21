@@ -8,8 +8,12 @@ import { useNavigate } from 'react-router-dom'
 const Home = () => {
 
   const token = localStorage.getItem('token')
+  const userId = localStorage.getItem('userId')
+  const userName = localStorage.getItem('userName')
+
   const navigate = useNavigate()
-  if(!token){
+
+  if(!token || !userId || !userName){
     navigate('/login')
   }
 
@@ -32,10 +36,6 @@ const Home = () => {
         </div>
 
       </div>
-
-
-
-
 
     </>
   )

@@ -18,6 +18,10 @@ const Login = (props) => {
 
   const onButtonClick = async () => {
     
+    localStorage.removeItem('token')
+    localStorage.removeItem('userId')
+    localStorage.removeItem('userName')
+
     if(userName === '' || password === ''){
         setError("All fields required")
         return

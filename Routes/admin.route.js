@@ -111,10 +111,16 @@ router.put('/admin/event/:eventId', verifyAdmin, async (req, res) => {
         res.status(500).send("An error occurred at server")
 
 
+    var new_cutoff = req.body.cutoff
+    if(req.body.cutoff){
+        new_cutoff = moment(req.body.cutoff).tz('Asia/Kolkata').toDate()
+    }
+
+
     const newEvent = {
         name: req.body.name,
         options: req.body.options,
-        cutoff: moment(req.body.cutoff).tz('Asia/Kolkata').toDate(),
+        cutoff: new_cutoff,
         winner: req.body.winner
     }
 
