@@ -180,10 +180,9 @@ router.put('/admin/event/:eventId', verifyAdmin, async (req, res) => {
 
             const user = await User.findById({ _id: bet.userId })
 
-            if(bet.points == 0)
+            
                 user.currentScore += bet.points
-            else
-                user.currentScore += bet.points - user.currentScore
+            
 
             console.log("bet   " + bet)
             const updatedUser = await User.findByIdAndUpdate(bet.userId, user, {new:true})

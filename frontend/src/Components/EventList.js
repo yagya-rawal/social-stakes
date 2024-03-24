@@ -260,7 +260,7 @@ const EventList = () => {
                                 <h6>{formatTime(cutoffs[team._id])}</h6>
                                 <div className='d-flex justify-content-between'>
                                     <button
-                                        className={`btn mr-2 p-3 ${selectedOptions[team._id] == team.options[0] ? 'btn-success' : 'btn-warning'}`}
+                                        className={`btn m-2 p-3 ${selectedOptions[team._id] == team.options[0] ? 'btn-success' : 'btn-warning'}`}
                                         onClick={() => setBet(team._id, team.options[0], team.options[1])}
                                     >
                                         {options[team.options[0]]}
@@ -269,7 +269,7 @@ const EventList = () => {
                                     {
                                         selectedOptions[team._id] &&
                                         <button
-                                            className="btn btn-danger"
+                                            className="btn m-2 btn-danger"
                                             onClick={() => setBet(team._id, -1)}
                                         >
                                             Cancel bet
@@ -278,7 +278,7 @@ const EventList = () => {
                                     }
 
                                     <button
-                                        className={`btn mr-2 p-3 ${selectedOptions[team._id] == team.options[1] ? 'btn-success' : 'btn-warning'}`}
+                                        className={`btn m-2 p-3 ${selectedOptions[team._id] == team.options[1] ? 'btn-success' : 'btn-warning'}`}
                                         onClick={() => setBet(team._id, team.options[1], team.options[0])}
                                     >
                                         {options[team.options[1]]}

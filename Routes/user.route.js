@@ -132,15 +132,6 @@ router.get('/user/:userId/events/new', verifyUser, async (req, res) => {
         }
     }).sort({ cutoff: 1 });
 
-
-
-    // console.log("get api called ")
-    // const newEvents = await Event.find({
-    //     cutoff: {
-    //         $gte: new Date()
-    //     }
-    // }).sort({ cutoff: +1 })
-
     if (!newEvents)
         res.status(500).send("An error occurred at server")
 
@@ -148,6 +139,43 @@ router.get('/user/:userId/events/new', verifyUser, async (req, res) => {
         res.status(200).json(newEvents)
 
 })
+
+router.get('/user/:userId/events/upcoming', verifyUser, async (req, res) => {
+
+    const currentDate = new Date()
+
+    const events = await Event.find({
+        cutoff: {
+            $gte: currentDate
+        }
+    }).sort({ cutoff: 1 })
+
+    if (!events)
+        return res.status(500).json("Some error occerred at server")
+
+    const response = await Promise.all(
+        events.map(async (event) => {
+            var temp = {
+                id: event._id,
+                name: event.name,
+                options: event.options,
+                cutoff: event.cutoff
+            }
+
+            const tempResponse = await EventBet.findOne({ 'userId': req.params.userId, 'eventId': event._id })
+
+            temp.selected = tempResponse?.optionId
+
+            console.log(temp)
+            return temp
+        })
+    )
+
+    res.status(200).json(response)
+
+})
+
+
 
 
 router.get('/user/:userId/events/old', verifyUser, async (req, res) => {
@@ -164,7 +192,11 @@ router.get('/user/:userId/events/old', verifyUser, async (req, res) => {
     else
         res.status(200).json(newEvents)
 
+
 })
+
+
+
 
 router.put('/user/:userId/events/:eventId', verifyUser, async (req, res) => {
 
@@ -287,6 +319,72 @@ router.get('/user/:userId/bets', verifyUser, async (req, res) => {
     res.status(200).json(eventbets)
 
 })
+
+
+router.get('/event/:eventId/bets', verifyUser, async (req,res) => {
+
+    const eventbets = await EventBet.find({
+        'eventId': req.params.eventId
+    })
+ 
+
+    if(!eventbets)
+        return res.status(500).json("Error occurred at server")
+
+    console.log('eventbets')
+    console.log(eventbets)
+
+    const event = await Event.findOne({'_id': req.params.eventId})
+
+    if(!event)
+        return res.status(500).json("Error occurred at server")
+
+    console.log(event)
+
+    var users = {}
+
+    const getAllUsers = await Promise.all(eventbets.map(async (eventbet) => {
+        const user = await User.findOne({"_id": eventbet.userId})
+
+        const tempUsers = {... users}
+
+        tempUsers[eventbet.userId] = user.userName
+
+        users = tempUsers
+
+    }))
+
+    console.log(users)
+
+    const betsWithOption0 =  eventbets.filter((eventbet) => 
+        (eventbet.optionId._id.toString() === event.options[0]._id.toString())
+    ).map(eventbet => ({
+        "id": eventbet.userId,
+        "name": users[eventbet.userId]
+    }))
+
+    const betsWithOption1 = eventbets.filter((eventbet) => 
+
+        (eventbet.optionId._id.toString() === event.options[1]._id.toString())
+    ).map(eventbet => ({
+        "id": eventbet.userId,
+        "name": users[eventbet.userId]
+    }))
+
+    const response = {}
+
+    response[event.options[0]] = betsWithOption0
+    response[event.options[1]] = betsWithOption1
+
+    console.log(response)
+    return res.status(200).json(response)
+
+
+
+})
+
+
+
 
 router.get('/user/:userId/event/:eventId/bets', verifyUser, async (req, res) => {
     try {
