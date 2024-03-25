@@ -14,6 +14,20 @@ const EventList = () => {
     const [selectedOptions, setSelectedOptions] = useState({})
     const [betsMatchwise, setBetsMatchwise ] = useState({})
 
+    const expandOptionName = {
+        'CSK' : 'Chennai Super Kings',
+        'MI' : 'Mumbai Indians',
+        'DC' : 'Delhi Capitals',
+        'SRH' : 'Sunrisers Hyderabad',
+        'LSG' : 'Lucknow Super Giants',
+        'KKR' : 'Kolkata Knight Riders',
+        'RCB' : 'Royal Challengers Bangalore',
+        'PBKS': 'Punjab Kings',
+        'RR'  : 'Rajasthan Royals',
+        'GT'  : 'Gujarat Titans'
+    }
+
+
     // Function to format date
     function formatDate(date) {
         if (date) {
@@ -94,7 +108,7 @@ const EventList = () => {
                             }
                         });
                         const json = await response.json();
-                        tempOptions[option] = json.name;
+                        tempOptions[option] = json.nickname;
                     }
                 }
             }
@@ -260,10 +274,17 @@ const EventList = () => {
                                 <h6>{formatTime(cutoffs[team._id])}</h6>
                                 <div className='d-flex justify-content-between'>
                                     <button
-                                        className={`btn mr-2 p-3 ${selectedOptions[team._id] == team.options[0] ? 'btn-success' : 'btn-warning'}`}
+                                        className={`flex-grow-1 d-block d-sm-none btn mx-2 mr-2 p-3 ${selectedOptions[team._id] == team.options[0] ? 'btn-success' : 'btn-warning'}`}
                                         onClick={() => setBet(team._id, team.options[0], team.options[1])}
                                     >
                                         {options[team.options[0]]}
+
+                                    </button>
+                                    <button
+                                        className={`d-none d-sm-block btn mx-2 mr-2 px-5 py-3 ${selectedOptions[team._id] == team.options[0] ? 'btn-success' : 'btn-warning'}`}
+                                        onClick={() => setBet(team._id, team.options[0], team.options[1])}
+                                    >
+                                        {expandOptionName[options[team.options[0]]]}
 
                                     </button>
                                     {
@@ -278,10 +299,16 @@ const EventList = () => {
                                     }
 
                                     <button
-                                        className={`btn mr-2 p-3 ${selectedOptions[team._id] == team.options[1] ? 'btn-success' : 'btn-warning'}`}
+                                        className={`flex-grow-1 d-block d-sm-none btn mx-2 mr-2 p-3 ${selectedOptions[team._id] == team.options[1] ? 'btn-success' : 'btn-warning'}`}
                                         onClick={() => setBet(team._id, team.options[1], team.options[0])}
                                     >
                                         {options[team.options[1]]}
+                                    </button>
+                                    <button
+                                        className={`d-none d-sm-block btn mx-2 mr-2 px-5 py-3 ${selectedOptions[team._id] == team.options[1] ? 'btn-success' : 'btn-warning'}`}
+                                        onClick={() => setBet(team._id, team.options[1], team.options[0])}
+                                    >
+                                        {expandOptionName[options[team.options[1]]]}
                                     </button>
 
                                     
