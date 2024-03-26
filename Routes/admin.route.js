@@ -24,7 +24,7 @@ const validateEvent = async (event) => {
         if (!option2)
             res.status(500).send("wrong option")
     }
-    
+
     if (event.winner) {
         const winner = await Option.findById(event.winner)
         if (!winner)
@@ -112,7 +112,7 @@ router.put('/admin/event/:eventId', verifyAdmin, async (req, res) => {
 
 
     var new_cutoff = req.body.cutoff
-    if(req.body.cutoff){
+    if (req.body.cutoff) {
         new_cutoff = moment(req.body.cutoff).tz('Asia/Kolkata').toDate()
     }
 
@@ -131,8 +131,6 @@ router.put('/admin/event/:eventId', verifyAdmin, async (req, res) => {
     if (!updated)
         res.status(500).send("Couldn't update the event")
 
-    console.log(updated)
-
     if (!newEvent.winner)
         res.status(200).json(newEvent)
 
@@ -142,18 +140,15 @@ router.put('/admin/event/:eventId', verifyAdmin, async (req, res) => {
         let winners = 0.0
         let losers = 0.0
 
-        console.log(newEvent.winner)
-
         eventbets.forEach(bet => {
             if (bet.optionId._id.toString() === newEvent.winner)
                 winners++
             else
                 losers++
 
-            console.log(bet.optionId._id.toString(), newEvent.winner)
         })
 
-        if(winners == 0 || losers == 0){
+        if (winners == 0 || losers == 0) {
             eventbets.forEach(async (bet) => {
 
                 deletedBet = await EventBet.findByIdAndDelete(bet._id)
@@ -163,40 +158,30 @@ router.put('/admin/event/:eventId', verifyAdmin, async (req, res) => {
 
             return res.status(200).json("Bet cancelled !")
         }
-        
-        else{
 
-        let winnerpoints = (10*losers) / winners
-        let loserpoints = 10
+        else {
 
-        eventbets.forEach(async (bet) => {
+            let winnerpoints = ((10 * losers) / winners).toFixed(2)
+            let loserpoints = 10
 
-            console.log(bet.optionId._id.toString())
+            eventbets.forEach(async (bet) => {
 
-            if (bet.optionId._id.toString() === newEvent.winner)
-                bet.points = winnerpoints
-            else
-                bet.points = -loserpoints
+                if (bet.optionId._id.toString() === newEvent.winner)
+                    bet.points = winnerpoints
+                else
+                    bet.points = -loserpoints
 
-            const user = await User.findById({ _id: bet.userId })
+                const user = await User.findById({ _id: bet.userId })
 
-            if(bet.points == 0)
                 user.currentScore += bet.points
-            else
-                user.currentScore += bet.points - user.currentScore
 
-            console.log("bet   " + bet)
-            const updatedUser = await User.findByIdAndUpdate(bet.userId, user, {new:true})
+                const updatedUser = await User.findByIdAndUpdate(bet.userId, user, { new: true })
 
-            const updatedBet = await EventBet.findByIdAndUpdate(bet._id, bet, {new:true})
+                const updatedBet = await EventBet.findByIdAndUpdate(bet._id, bet, { new: true })
 
-            // console.log(updatedUser)
-            // console.log(updatedBet)
+            })
 
-
-        })
-
-        res.status(200).json(eventbets)
+            res.status(200).json(eventbets)
         }
     }
 

@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import Header from '../../Components/Navbar'
 import EventList from '../../Components/EventList'
 import LeaderBoard from '../../Components/LeaderBoard'
 import { useNavigate } from 'react-router-dom'
+import MatchList from '../../Components/MatchList'
 
 const Home = () => {
 
@@ -13,9 +14,11 @@ const Home = () => {
 
   const navigate = useNavigate()
 
-  if(!token || !userId || !userName){
-    navigate('/login')
-  }
+  useEffect(() => {
+    if (!token || !userId || !userName) {
+      navigate('/login')
+    }
+  }, [])
 
   return (
     <>
@@ -25,12 +28,12 @@ const Home = () => {
 
         <div className="row">
 
-          <div className="col-md-4">
+          <div className="col-md-3">
             <LeaderBoard />
           </div>
 
-          <div className="col-md-8">
-            <EventList />
+          <div className="col-md-9">
+            <MatchList />
           </div>
 
         </div>
