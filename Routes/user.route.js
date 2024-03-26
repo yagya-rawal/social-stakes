@@ -437,4 +437,16 @@ router.get('/user/:userId/event/:eventId/bets', verifyUser, async (req, res) => 
     }
 })
 
+router.get('/user/:userId/options', verifyUser, async (req, res) => {
+    try {
+        const options = await Option.find()
+        //   const events = [];
+
+        
+        res.status(200).json(options);
+    } catch (err) {
+        res.status(500).send("error occurred at server... ");
+    }
+})
+
 module.exports = router

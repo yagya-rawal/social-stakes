@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import Header from '../../Components/Navbar'
 import EventList from '../../Components/EventList'
@@ -14,9 +14,11 @@ const Home = () => {
 
   const navigate = useNavigate()
 
-  if(!token || !userId || !userName){
-    navigate('/login')
-  }
+  useEffect(() => {
+    if (!token || !userId || !userName) {
+      navigate('/login')
+    }
+  }, [])
 
   return (
     <>

@@ -10,13 +10,6 @@ const LeaderBoard = () => {
 
   const [leaderBoard, setLeaderBoard] = useState([])
 
-  const leaderboardData = [
-    { rank: 1, userName: 'User1', score: 1000 },
-    { rank: 2, userName: 'User2', score: 900 },
-    { rank: 3, userName: 'User3', score: 800 },
-    // Add more data as needed
-  ];
-
   const fetchLeaderBoard = async () => {
     const response = await fetch(`/user/${userId}/leaderboard`, {
       method: 'GET',
