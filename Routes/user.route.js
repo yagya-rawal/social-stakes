@@ -146,7 +146,7 @@ router.get('/user/:userId/events/upcoming', verifyUser, async (req, res) => {
 
     const events = await Event.find({
         cutoff: {
-            $gte: currentDate
+            $gte: new Date(currentDate -1)
         }
     }).sort({ cutoff: 1 })
 
@@ -235,10 +235,7 @@ router.put('/user/:userId/events/:eventId', verifyUser, async (req, res) => {
 
         else {
             if (req.body.option !== event.options[0]._id.toString() && req.body.option !== event.options[1]._id.toString()) {
-                // console.log(event.options[0]._id.toString())
-                // console.log(event.options[1]._id)
-                // console.log(req.body.option)
-
+                
                 res.status(400).json("Bad Request, Wrong option selected")
             }
 
