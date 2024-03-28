@@ -6,6 +6,7 @@ const userId = localStorage.getItem('userId')
 
 const MatchList = () => {
 
+    const currentTime = new Date()
     const [betsMatchwise, setBetsMatchwise] = useState({})
     const [showOption, setShowOption] = useState(null)
     const [matches, setMatches] = useState([])
@@ -192,13 +193,14 @@ const MatchList = () => {
     return (
         <div className='container-fluid'>
             <ListGroup className=' '>
+            {console.log(currentTime)}
 
                 {
                     matches && matches.map((match,index) => {
-                        { console.log(match.name) }
-                        return <ListGroup.Item key={index}>
+                      
+                        return <ListGroup.Item  key={index}>
                             <div  className='card '  >
-                                <div className='card-body container-fluid' >
+                                <div className='card-body container-fluid ' >
                                     <h4 className='card-title text-center'>{match.name}</h4>
                                     <div className='container-fluid'>
                                         <div className='row'>
@@ -206,9 +208,13 @@ const MatchList = () => {
                                             <div className='col-md-4'>
                                         <div className='text-center'>{formatDate(match.cutoff)}</div>
                                         <div className='text-center'>{formatTime(match.cutoff)}</div>
+                                        {
+                                            new Date(match.cutoff) < currentTime && 
+                                            <h5 className='text-center text-primary'> Match started !! </h5>
+                                        }
                                         </div>
                                         <div className='col-md-4'>
-                                        {match.selected &&
+                                        {new Date(match.cutoff) > currentTime && match.selected &&
                                             <div className='d-flex justify-content-end'>
                                                 <button
                                                     className='btn m-2 py-2 px-3 btn-danger'
@@ -218,6 +224,8 @@ const MatchList = () => {
                                                 </button>
                                             </div>
                                         }
+                                        
+                                        
                                         </div>
                                         </div>
                                         </div>

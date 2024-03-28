@@ -148,6 +148,7 @@ router.get('/user/:userId/events/upcoming', verifyUser, async (req, res) => {
     yesterday.setDate(yesterday.getDate() - 1);
 
     const events = await Event.find({
+        winner: null,
         cutoff: {
             $gte: yesterday
         }
