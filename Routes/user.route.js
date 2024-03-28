@@ -144,9 +144,12 @@ router.get('/user/:userId/events/upcoming', verifyUser, async (req, res) => {
 
     const currentDate = new Date()
 
+    const yesterday = new Date(currentDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+
     const events = await Event.find({
         cutoff: {
-            $gte: new Date(currentDate -1)
+            $gte: yesterday
         }
     }).sort({ cutoff: 1 })
 
