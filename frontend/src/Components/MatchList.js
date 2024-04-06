@@ -263,7 +263,7 @@ const MatchList = () => {
                                         </div>
                                     </div>
 
-                                    {showOption !== match.id && <span className='btn' style={{ display: 'block', width: '100%', height: '100%', fontWeight: 'bold' }} onClick={() => handleButtonClick(true, match.id)}>
+                                    {showOption !== match.id && <span className='btn text-primary' style={{ display: 'block', width: '100%', height: '100%', fontWeight: 'bold' }} onClick={() => handleButtonClick(true, match.id)}>
                                         Show Bets
                                         {/* &#9660; */}
                                     </span>}
@@ -301,7 +301,7 @@ const MatchList = () => {
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <span className='btn' style={{ display: 'block', width: '100%', height: '100%', fontWeight: 'bold' }} onClick={() => handleButtonClick(false, match.id)}>
+                                            <span className='btn text-primary' style={{ display: 'block', width: '100%', height: '100%', fontWeight: 'bold' }} onClick={() => handleButtonClick(false, match.id)}>
                                                 Hide
                                                 {/* &#9660; */}
                                             </span>

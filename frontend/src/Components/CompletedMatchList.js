@@ -132,7 +132,7 @@ const CompletedMatchList = () => {
                                         </div>
                                     </div>
 
-                                    {showOption !== match.id && <span className='btn text-primary' style={{ display: 'block', width: '100%', height: '100%' }} onClick={() => handleButtonClick(true, match.id)}>
+                                    {showOption !== match.id && <span className='btn text-primary' style={{ display: 'block', width: '100%', height: '100%', fontWeight: 'bold'  }} onClick={() => handleButtonClick(true, match.id)}>
                                         Show Bets
                                         {/* &#9660; */}
                                     </span>}
