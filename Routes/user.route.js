@@ -142,16 +142,8 @@ router.get('/user/:userId/events/new', verifyUser, async (req, res) => {
 
 router.get('/user/:userId/events/upcoming', verifyUser, async (req, res) => {
 
-    const currentDate = new Date()
-
-    const yesterday = new Date(currentDate);
-    yesterday.setDate(yesterday.getDate() - 1);
-
     const events = await Event.find({
-        winner: null,
-        cutoff: {
-            $gte: yesterday
-        }
+        winner: null
     }).sort({ cutoff: 1 })
 
     if (!events)
@@ -169,6 +161,39 @@ router.get('/user/:userId/events/upcoming', verifyUser, async (req, res) => {
             const tempResponse = await EventBet.findOne({ 'userId': req.params.userId, 'eventId': event._id })
 
             temp.selected = tempResponse?.optionId
+
+            console.log(temp)
+            return temp
+        })
+    )
+
+    res.status(200).json(response)
+
+})
+
+router.get('/user/:userId/events/completed', verifyUser, async (req, res) => {
+
+    const events = await Event.find({
+        winner: { $ne: null }
+    }).sort({ cutoff: -1 })
+
+    if (!events)
+        return res.status(500).json("Some error occerred at server")
+
+    const response = await Promise.all(
+        events.map(async (event) => {
+            var temp = {
+                id: event._id,
+                name: event.name,
+                options: event.options,
+                cutoff: event.cutoff,
+                winner: event.winner
+            }
+
+            const tempResponse = await EventBet.findOne({ 'userId': req.params.userId, 'eventId': event._id })
+
+            temp.selected = tempResponse?.optionId
+            temp.points = tempResponse?.points
 
             console.log(temp)
             return temp
@@ -239,7 +264,7 @@ router.put('/user/:userId/events/:eventId', verifyUser, async (req, res) => {
 
         else {
             if (req.body.option !== event.options[0]._id.toString() && req.body.option !== event.options[1]._id.toString()) {
-                
+
                 res.status(400).json("Bad Request, Wrong option selected")
             }
 
@@ -322,22 +347,22 @@ router.get('/user/:userId/bets', verifyUser, async (req, res) => {
 })
 
 
-router.get('/event/:eventId/bets', verifyUser, async (req,res) => {
+router.get('/event/:eventId/bets', verifyUser, async (req, res) => {
 
     const eventbets = await EventBet.find({
         'eventId': req.params.eventId
     })
- 
 
-    if(!eventbets)
+
+    if (!eventbets)
         return res.status(500).json("Error occurred at server")
 
     console.log('eventbets')
     console.log(eventbets)
 
-    const event = await Event.findOne({'_id': req.params.eventId})
+    const event = await Event.findOne({ '_id': req.params.eventId })
 
-    if(!event)
+    if (!event)
         return res.status(500).json("Error occurred at server")
 
     console.log(event)
@@ -345,9 +370,9 @@ router.get('/event/:eventId/bets', verifyUser, async (req,res) => {
     var users = {}
 
     const getAllUsers = await Promise.all(eventbets.map(async (eventbet) => {
-        const user = await User.findOne({"_id": eventbet.userId})
+        const user = await User.findOne({ "_id": eventbet.userId })
 
-        const tempUsers = {... users}
+        const tempUsers = { ...users }
 
         tempUsers[eventbet.userId] = user.userName
 
@@ -357,14 +382,17 @@ router.get('/event/:eventId/bets', verifyUser, async (req,res) => {
 
     console.log(users)
 
-    const betsWithOption0 =  eventbets.filter((eventbet) => 
+    const betsWithOption0 = eventbets.filter((eventbet) =>
         (eventbet.optionId._id.toString() === event.options[0]._id.toString())
-    ).map(eventbet => ({
+    ).map(eventbet => {
+        console.log(eventbet)
+        return ({
         "id": eventbet.userId,
         "name": users[eventbet.userId]
-    }))
+    })
+})
 
-    const betsWithOption1 = eventbets.filter((eventbet) => 
+    const betsWithOption1 = eventbets.filter((eventbet) =>
 
         (eventbet.optionId._id.toString() === event.options[1]._id.toString())
     ).map(eventbet => ({
@@ -443,7 +471,7 @@ router.get('/user/:userId/options', verifyUser, async (req, res) => {
         const options = await Option.find()
         //   const events = [];
 
-        
+
         res.status(200).json(options);
     } catch (err) {
         res.status(500).send("error occurred at server... ");

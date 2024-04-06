@@ -30,6 +30,9 @@ const MatchList = () => {
     }
 
     const fetchMatches = async () => {
+
+        console.log("fetchMatches api hit in MatchList")
+
         const response = await fetch(`/user/${userId}/events/upcoming`, {
             method: 'GET',
             headers: {
@@ -37,15 +40,12 @@ const MatchList = () => {
             }
         })
         const json = await response.json()
+
         if (!response.ok)
             return
 
         else {
-
-
-            console.log(json)
             setMatches(json)
-
         }
     }
 
@@ -92,54 +92,54 @@ const MatchList = () => {
             setShowOption(null)
         }
 
-        else { 
+        else {
 
-                const response = await fetch(`/event/${matchId}/bets`, {
-                    method: 'GET',
-                    headers: {
-                        'authorization': token
-                    }
-                })
-
-                if (!response.ok) {
-                    console.log("Failed to fetch bets for the match")
-                    return null
+            const response = await fetch(`/event/${matchId}/bets`, {
+                method: 'GET',
+                headers: {
+                    'authorization': token
                 }
+            })
 
-                const json = await response.json()
+            if (!response.ok) {
+                console.log("Failed to fetch bets for the match")
+                return null
+            }
 
-                const tempBetsMatchWise = { }
+            const json = await response.json()
 
-                tempBetsMatchWise[matchId] = json
+            const tempBetsMatchWise = {}
 
-                setBetsMatchwise(tempBetsMatchWise)
+            tempBetsMatchWise[matchId] = json
 
-            
+            setBetsMatchwise(tempBetsMatchWise)
+
+
 
             setShowOption(matchId)
         }
     }
 
-    const setBet = async (index,matchId, option) => {
+    const setBet = async (index, matchId, option) => {
 
-        if(showOption === matchId){
+        if (showOption === matchId) {
             setShowOption(null)
         }
-        
+
         const data = { option }
 
         const response = await fetch(`/user/${userId}/events/${matchId}`, {
             method: 'PUT',
             body: JSON.stringify(data),
-            headers:{
-                'Content-Type' : 'application/json',
+            headers: {
+                'Content-Type': 'application/json',
                 'authorization': token
             }
         })
 
         const json = await response.json()
 
-        if (!response.ok){
+        if (!response.ok) {
             console.log("Couldn't set your bet")
             return
         }
@@ -149,114 +149,114 @@ const MatchList = () => {
             return updatedMatches;
         }))
 
-       
+
     }
 
-    const cancelBet = async (index,matchId) => {
+    const cancelBet = async (index, matchId) => {
 
-        if(showOption === matchId){
+        if (showOption === matchId) {
             setShowOption(null)
             console.log("showOption is reset")
         }
 
         const data = {
-            'option' : -1
+            'option': -1
         }
 
-        const response = await fetch(`/user/${userId}/events/${matchId}`,{
-            method : 'PUT',
-            body   : JSON.stringify(data),
+        const response = await fetch(`/user/${userId}/events/${matchId}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
             headers: {
-                'Content-Type' : 'application/json',
+                'Content-Type': 'application/json',
                 'authorization': token
             }
         })
 
         const json = await response.json()
 
-        if(!response.ok){
+        if (!response.ok) {
             console.log("Couldn't update your bet")
-            return 
+            return
         }
 
 
-        
-            setMatches(prevMatches => {
+
+        setMatches(prevMatches => {
             const updatedMatches = [...prevMatches];
             updatedMatches[index] = { ...updatedMatches[index], selected: null };
             return updatedMatches;
         })
 
-       
+
     }
 
     return (
         <div className='container-fluid'>
             <ListGroup className=' '>
-            {console.log(currentTime)}
+                {console.log(currentTime)}
 
                 {
-                    matches && matches.map((match,index) => {
-                      
-                        return <ListGroup.Item  key={index}>
-                            <div  className='card '  >
+                    matches && matches.map((match, index) => {
+
+                        return <ListGroup.Item key={index}>
+                            <div className='card '  >
                                 <div className='card-body container-fluid ' >
                                     <h4 className='card-title text-center'>{match.name}</h4>
                                     <div className='container-fluid'>
                                         <div className='row'>
                                             <div className='col-md-4'></div>
                                             <div className='col-md-4'>
-                                        <div className='text-center'>{formatDate(match.cutoff)}</div>
-                                        <div className='text-center'>{formatTime(match.cutoff)}</div>
-                                        {
-                                            new Date(match.cutoff) < currentTime && 
-                                            <h5 className='text-center text-primary'> Match started !! </h5>
-                                        }
-                                        </div>
-                                        <div className='col-md-4'>
-                                        {new Date(match.cutoff) > currentTime && match.selected &&
-                                            <div className='d-flex justify-content-end'>
-                                                <button
-                                                    className='btn m-2 py-2 px-3 btn-danger'
-                                                    onClick={() => cancelBet(index, match.id)}
-                                                >
-                                                    Cancel bet
-                                                </button>
+                                                <div className='text-center'>{formatDate(match.cutoff)}</div>
+                                                <div className='text-center'>{formatTime(match.cutoff)}</div>
+                                                {
+                                                    new Date(match.cutoff) < currentTime &&
+                                                    <h5 className='text-center text-primary'> Match started !! </h5>
+                                                }
                                             </div>
-                                        }
-                                        
-                                        
+                                            <div className='col-md-4'>
+                                                {new Date(match.cutoff) > currentTime && match.selected &&
+                                                    <div className='d-flex justify-content-end'>
+                                                        <button
+                                                            className='btn m-2 py-2 px-3 btn-danger'
+                                                            onClick={() => cancelBet(index, match.id)}
+                                                        >
+                                                            Cancel bet
+                                                        </button>
+                                                    </div>
+                                                }
+
+
+                                            </div>
                                         </div>
-                                        </div>
-                                        </div>
+                                    </div>
                                     <div className='d-flex justify-content-between'>
                                         <div className='d-flex flex-fill text-center justify-content-center'>
                                             <button
                                                 className={`1 d-block d-sm-none btn mx-2 mr-2 px-5 py-3  ${match.selected === match.options[0] ? 'btn-success' : 'btn-warning'}`}
-                                                onClick={() => match.selected === match.options[0] ? null : setBet(index,match.id, match.options[0])}
+                                                onClick={() => match.selected === match.options[0] ? null : setBet(index, match.id, match.options[0])}
                                             >
                                                 {options[match.options[0]]?.nickname}
                                             </button>
 
                                             <button
                                                 className={` d-none d-sm-block btn mx-2 mr-2 px-5 py-3  ${match.selected === match.options[0] ? 'btn-success' : 'btn-warning'}`}
-                                                onClick={() => match.selected === match.options[0] ? null : setBet(index,match.id, match.options[0])}
+                                                onClick={() => match.selected === match.options[0] ? null : setBet(index, match.id, match.options[0])}
                                             >
                                                 {options[match.options[0]]?.name}
                                             </button>
                                         </div>
-                                        
+
                                         <div className='d-flex flex-fill text-center justify-content-center'>
                                             <button
                                                 className={` d-block d-sm-none btn mx-2 mr-2 px-5 py-3  ${match.selected === match.options[1] ? 'btn-success' : 'btn-warning'}`}
-                                                onClick={() => match.selected === match.options[1] ? null : setBet(index,match.id, match.options[1])}
+                                                onClick={() => match.selected === match.options[1] ? null : setBet(index, match.id, match.options[1])}
                                             >
                                                 {options[match.options[1]]?.nickname}
                                             </button>
 
                                             <button
                                                 className={` d-none d-sm-block btn mx-2 mr-2 px-5 py-3  ${match.selected === match.options[1] ? 'btn-success' : 'btn-warning'}`}
-                                                onClick={() => match.selected === match.options[1] ? null : setBet(index,match.id, match.options[1])}
+                                                onClick={() => match.selected === match.options[1] ? null : setBet(index, match.id, match.options[1])}
                                             >
                                                 {options[match.options[1]]?.name}
                                             </button>
