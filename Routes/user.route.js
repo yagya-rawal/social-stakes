@@ -13,7 +13,6 @@ const router = express.Router()
 
 router.post('/user/register', async (req, res) => {
 
-    // console.log(req.body.userName)
     const result = await User.findOne({ 'userName': req.body.userName })
     if (result) {
         return res.status(404).json("UserName already exists")
@@ -30,10 +29,9 @@ router.post('/user/register', async (req, res) => {
                 userName: req.body.userName,
                 password: hashedPassword,
             })
-            // console.log("User created successfully !! ")
             res.status(200).send("User Created successfully !! ")
         } catch (error) {
-            // console.log(error)
+            console.log(error)
         }
 
     }
@@ -42,7 +40,6 @@ router.post('/user/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
 
-    // console.log("login requested" + req.body.userName)
     try {
         const user = await User.findOne({
             userName: req.body.userName
@@ -51,9 +48,6 @@ router.post('/login', async (req, res) => {
 
 
         else {
-            console.log(user)
-
-            console.log("asgbojndf    dfsdgsno " + req.body.userName)
             const hashedPassword = await bcrypt.compare(req.body.password, user.password)
 
             if (!hashedPassword) {
@@ -63,12 +57,11 @@ router.post('/login', async (req, res) => {
             else {
                 const token = jwt.sign({ userId: user._id }, process.env.PRIVATE_KEY, async (err, token) => {
                     if (err) {
-                        // console.log("couldn't generate token")
                         res.status(500).json("Something went wrong")
                     }
 
                     else
-                        res.status(200).json({ 'userId': user._id, token })
+                        res.status(200).json({ 'userId': user._id,'isAdmin': user.isAdmin, token })
                 })
             }
         }
@@ -83,27 +76,22 @@ router.post('/change-password', async (req, res) => {
     const { userName, oldPassword, newPassword } = req.body;
 
     try {
-        // Find user by email
         const user = await User.findOne({ userName });
 
-        // If user doesn't exist
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Verify old password
         const passwordMatch = await bcrypt.compare(oldPassword, user.password);
         if (!passwordMatch) {
             console.log(passwordMatch, user.password, oldPassword)
             return res.status(401).json({ error: 'Invalid old password' });
         }
 
-        // Hash new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
         console.log(hashedPassword)
 
-        // Update user's password
         user.password = hashedPassword;
         await user.save();
 
@@ -118,14 +106,10 @@ router.post('/change-password', async (req, res) => {
 
 router.get('/user/:userId/events/new', verifyUser, async (req, res) => {
 
-    // Get the current date
     const currentDate = new Date();
-
-    // Get yesterday's date by subtracting 1 day from the current date
     const yesterday = new Date(currentDate);
     yesterday.setDate(yesterday.getDate() - 1);
 
-    // Perform the query using yesterday's date
     const newEvents = await Event.find({
         cutoff: {
             $gte: yesterday
@@ -229,8 +213,6 @@ router.get('/user/:userId/events/old', verifyUser, async (req, res) => {
 
 router.put('/user/:userId/events/:eventId', verifyUser, async (req, res) => {
 
-    // console.log(req.body)
-
     const today = new Date()
 
     const event = await Event.findOne({ _id: req.params.eventId })
@@ -245,7 +227,6 @@ router.put('/user/:userId/events/:eventId', verifyUser, async (req, res) => {
     if (req.body.option == -1) {
         const eventbet = await EventBet.findOneAndDelete({ 'userId': req.params.userId, 'eventId': req.params.eventId })
 
-        // console.log("option is -1")
         if (!eventbet)
             res.status(500).send("An error occurred at server")
 
@@ -255,7 +236,6 @@ router.put('/user/:userId/events/:eventId', verifyUser, async (req, res) => {
     }
 
     else {
-        // console.log("option :: " + req.body.option)
 
         const option = await Option.findOne({ _id: req.body.option })
 
@@ -317,9 +297,6 @@ router.get('/user/:userId/leaderboard', verifyUser, async (req, res) => {
 
 router.get('/user/:userId/option/:optionId', verifyUser, async (req, res) => {
 
-
-    //  console.log("optionid " + req.params.optionId)
-
     const option = await Option.findOne({ _id: req.params.optionId })
 
     if (!option) {
@@ -328,7 +305,6 @@ router.get('/user/:userId/option/:optionId', verifyUser, async (req, res) => {
 
     else {
 
-        //     console.log(option)
         res.status(200).json(option)
 
     }
@@ -387,10 +363,10 @@ router.get('/event/:eventId/bets', verifyUser, async (req, res) => {
     ).map(eventbet => {
         console.log(eventbet)
         return ({
-        "id": eventbet.userId,
-        "name": users[eventbet.userId]
+            "id": eventbet.userId,
+            "name": users[eventbet.userId]
+        })
     })
-})
 
     const betsWithOption1 = eventbets.filter((eventbet) =>
 
@@ -425,9 +401,7 @@ router.get('/user/:userId/event/:eventId/bets', verifyUser, async (req, res) => 
         if (!eventbets)
             return res.status(500).json("some error occurred")
 
-        // console.log("\n\n\n eventbets ::"+ (eventbets))
         const event = await Event.findOne({ '_id': req.params.eventId })
-        console.log("\n\n\n event ::" + event)
 
         if (!event)
             return res.status(500).json("some error occurred")
@@ -469,8 +443,6 @@ router.get('/user/:userId/event/:eventId/bets', verifyUser, async (req, res) => 
 router.get('/user/:userId/options', verifyUser, async (req, res) => {
     try {
         const options = await Option.find()
-        //   const events = [];
-
 
         res.status(200).json(options);
     } catch (err) {

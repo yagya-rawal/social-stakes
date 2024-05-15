@@ -4,12 +4,11 @@ const User = require('./Models/user.model.js')
 
 const verifyUser = (req, res, next) => {
     const token = req.headers.authorization;
-  
-    console.log(token)
+
     if (!token) {
       return res.status(403).json({ error: 'Token is missing' });
     }
-  
+    
     jwt.verify(token, process.env.PRIVATE_KEY, (err, decoded) => {
       if (err) {
         console.log(token, decoded)
