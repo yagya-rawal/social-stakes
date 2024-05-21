@@ -26,7 +26,9 @@ const validateEvent = async (event) => {
     }
 
     if (event.winner) {
+
         const winner = await Option.findById(event.winner)
+
         if (!winner)
             res.status(500).send("wrong option in winner")
     }
@@ -116,7 +118,6 @@ router.put('/admin/event/:eventId', verifyAdmin, async (req, res) => {
         new_cutoff = moment(req.body.cutoff).tz('Asia/Kolkata').toDate()
     }
 
-
     const newEvent = {
         name: req.body.name,
         options: req.body.options,
@@ -126,6 +127,9 @@ router.put('/admin/event/:eventId', verifyAdmin, async (req, res) => {
 
     validateEvent(newEvent)
 
+
+
+
     const updated = await Event.findByIdAndUpdate({ _id: req.params.eventId }, newEvent)
 
     if (!updated)
@@ -133,6 +137,31 @@ router.put('/admin/event/:eventId', verifyAdmin, async (req, res) => {
 
     if (!newEvent.winner)
         res.status(200).json(newEvent)
+
+    
+
+    const winner = await Option.findOne({ _id: newEvent.winner })
+    if (!winner)
+        return res.status(404).json(" wrong option selected ")
+
+    console.log(winner)
+
+    if (winner._id.toString() == "664a0677085c7dc5e4f37d53") {
+
+        console.log(winner)
+
+        const eventbets = await EventBet.find({ eventId: req.params.eventId })
+
+        eventbets.forEach(async (bet) => {
+
+            bet.points = 0;
+
+            const updatedBet = await EventBet.findByIdAndUpdate(bet._id, bet, { new: true })
+
+        })
+
+        return res.status(200).json(eventbets)
+    }
 
     else {
         const eventbets = await EventBet.find({ eventId: req.params.eventId })

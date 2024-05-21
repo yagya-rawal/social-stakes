@@ -120,14 +120,17 @@ const CompletedMatchList = () => {
 
                                         <h3 className='col-md-4 card-title text-center'>{match.name}</h3>
                                         <div className='col-md-4 d-flex justify-content-center'>
-                                            <div className={`${match.points < 0 ? ' text-danger' : 'text-success'} text-center `} style={{ 'fontWeight': 'bold' }}>{match.points}</div>
+                                            {match.points != 0 && <div className={`${match.points < 0 ? ' text-danger' : 'text-success'} text-center `} style={{ 'fontWeight': 'bold' }}>{match.points}</div>}
+                                            {match.points == 0 && <div className={`text-warning text-center`} style={{ 'fontWeight': 'bold' }}>{match.points}</div> }
                                         </div>
                                     </div>
                                     <div className='container-fluid'>
                                         <div className='row'>
                                             <div className='col-md-4'></div>
                                             <div className='col-md-4 '>
-                                                <div className='pt-2 d-flex justify-content-center'><div className='d-flex justify-content-center' style={{ 'fontWeight': 'bold' }}>winner:<div className='text-success mx-2'>{options[match.winner]?.nickname}</div></div> </div>
+                                                {console.log(options)}
+                                                {match.winner && options[match.winner]?.name == "No Result" && <div className='pt-2 d-flex justify-content-center'><div className='d-flex justify-content-center' style={{ 'fontWeight': 'bold' }}>Match Drawn </div></div> }
+                                                {match.winner && options[match.winner]?.name != "No Result" && <div className='pt-2 d-flex justify-content-center'><div className='d-flex justify-content-center' style={{ 'fontWeight': 'bold' }}>winner:<div className='text-success mx-2'>{options[match.winner]?.nickname}</div></div> </div>}
                                             </div>
                                         </div>
                                     </div>
